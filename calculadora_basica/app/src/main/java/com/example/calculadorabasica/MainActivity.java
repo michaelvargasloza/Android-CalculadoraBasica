@@ -2,17 +2,20 @@ package com.example.calculadorabasica;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnUno, btnDos, btnTres, btnCuatro, btnCinco, btnSeis, btnSiete, btnOcho, btnNueve,
-            btnSuma, btnResta, btnMultiplica, btnDivide, btnClean, btnBorrar, btnPunto, btnIgual;
-    TextView Resultado;
+    Button btnUno, btnDos, btnTres, btnCuatro, btnCinco, btnSeis, btnSiete, btnOcho, btnNueve, btnCero,
+            btnSuma, btnResta, btnMultiplica, btnDivide, btnClean, btnBorrar, btnPunto, btnIgual, btnCode;
+    TextView Resultado, Operacion;
     double resultado;
-    String operador, mostrar , reserva;
+    String operador, mostrar , reserva, ejercicio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         btnSiete = (Button)findViewById(R.id.Siete);
         btnOcho = (Button)findViewById(R.id.Ocho);
         btnNueve = (Button)findViewById(R.id.Nueve);
+        btnCero = (Button)findViewById(R.id.Cero);
         btnSuma = (Button)findViewById(R.id.Suma);
         btnResta = (Button)findViewById(R.id.Resta);
         btnMultiplica = (Button)findViewById(R.id.Multiplica);
@@ -35,8 +39,10 @@ public class MainActivity extends AppCompatActivity {
         btnClean = (Button)findViewById(R.id.Clean);
         btnBorrar = (Button)findViewById(R.id.Borrar);
         Resultado = (TextView)findViewById(R.id.Etiqueta);
+        Operacion = (TextView)findViewById(R.id.Historial);
         btnPunto = (Button)findViewById(R.id.Punto);
         btnIgual = (Button)findViewById(R.id.Igual);
+        btnCode = (Button)findViewById(R.id.Codigo);
 
         btnUno.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -114,10 +120,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnCero.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                mostrar = Resultado.getText().toString();
+                mostrar = mostrar + "0";
+                Resultado.setText(mostrar);
+            }
+        });
+
         btnSuma.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 reserva = Resultado.getText().toString();
                 operador = "+";
+                ejercicio = reserva + operador;
+                Operacion.setText(ejercicio);
                 Resultado.setText("");
             }
         });
@@ -126,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 reserva = Resultado.getText().toString();
                 operador = "-";
+                ejercicio = reserva + operador;
+                Operacion.setText(ejercicio);
                 Resultado.setText("");
             }
         });
@@ -134,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 reserva = Resultado.getText().toString();
                 operador = "*";
+                ejercicio = reserva + operador;
+                Operacion.setText(ejercicio);
                 Resultado.setText("");
             }
         });
@@ -142,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 reserva = Resultado.getText().toString();
                 operador = "/";
+                ejercicio = reserva + operador;
+                Operacion.setText(ejercicio);
                 Resultado.setText("");
             }
         });
@@ -158,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 mostrar = "";
                 Resultado.setText(mostrar);
+                Operacion.setText(mostrar);
                 reserva = "";
                 operador = "";
             }
@@ -165,31 +188,55 @@ public class MainActivity extends AppCompatActivity {
 
         btnBorrar.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                mostrar = Resultado.getText().toString();
-                mostrar = mostrar.substring(0,mostrar.length()-1);
-                Resultado.setText(mostrar);
+                try {
+                    mostrar = Resultado.getText().toString();
+                    mostrar = mostrar.substring(0, mostrar.length() - 1);
+                    Resultado.setText(mostrar);
+                }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "No existen valores a borrar", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         btnIgual.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                mostrar = Resultado.getText().toString();
-                mostrar = mostrar + "1";
-                if(operador.equals("-")){
-                    resultado = Double.parseDouble(reserva) - Double.parseDouble(Resultado.getText().toString());
-                    Resultado.setText(String.valueOf(resultado));
+                try {
+                    mostrar = Resultado.getText().toString();
+                    Operacion.setText(Operacion.getText() + mostrar);
+                    mostrar = mostrar + "1";
+                    if(operador.equals("-")){
+                        resultado = Double.parseDouble(reserva) - Double.parseDouble(Resultado.getText().toString());
+                        Resultado.setText(String.valueOf(resultado));
+                    }
+                    if(operador.equals("+")){
+                        resultado = Double.parseDouble(reserva) + Double.parseDouble(Resultado.getText().toString());
+                        Resultado.setText(String.valueOf(resultado));
+                    }
+                    if(operador.equals("/")){
+                        resultado = Double.parseDouble(reserva) / Double.parseDouble(Resultado.getText().toString());
+                        Resultado.setText(String.valueOf(resultado));
+                    }
+                    if(operador.equals("*")){
+                        resultado = Double.parseDouble(reserva) * Double.parseDouble(Resultado.getText().toString());
+                        Resultado.setText(String.valueOf(resultado));
+                    }
                 }
-                if(operador.equals("+")){
-                    resultado = Double.parseDouble(reserva) + Double.parseDouble(Resultado.getText().toString());
-                    Resultado.setText(String.valueOf(resultado));
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "Verifica los valores ingresados", Toast.LENGTH_LONG).show();
                 }
-                if(operador.equals("/")){
-                    resultado = Double.parseDouble(reserva) / Double.parseDouble(Resultado.getText().toString());
-                    Resultado.setText(String.valueOf(resultado));
+            }
+        });
+
+        btnCode.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                try{
+                    Uri uriUrl = Uri.parse("https://github.com/michaelvargasloza");
+                    Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                    startActivity(launchBrowser);
                 }
-                if(operador.equals("*")){
-                    resultado = Double.parseDouble(reserva) * Double.parseDouble(Resultado.getText().toString());
-                    Resultado.setText(String.valueOf(resultado));
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "Problema, verificar conexion a internet.", Toast.LENGTH_LONG).show();
                 }
             }
         });
